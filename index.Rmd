@@ -3,3 +3,50 @@ title: "index"
 output: html_document
 ---
 
+```{r}
+library(DBI)
+library(RSQLite)
+```
+
+
+```{r}
+drv = dbDriver("SQLite")
+
+retail_sales_db = dbConnect(drv, dbname = "./data/retail_sales.sqlite")
+
+```
+
+```{r}
+customers = read.csv("./data/customers.csv",
+                     header = TRUE, stringsAsFactors = FALSE)
+
+
+
+```
+
+
+```{r}
+dbWriteTable(retail_sales_db,
+             "CUSTOMERS", customers, overwrite = TRUE)
+
+```
+
+
+```{r}
+
+dbListTables(retail_sales_db)
+dbListFields(retail_sales_db, "CUSTOMERS")
+
+dbGetQuery(retail_sales_db, 
+           "SELECT *
+           FROM CUSTOMERS
+           LIMIT 10")
+
+```
+
+
+
+
+
+
+
