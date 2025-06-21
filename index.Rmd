@@ -12,8 +12,8 @@ library(RSQLite)
 ```{r}
 drv = dbDriver("SQLite")
 
-retail_sales_db = dbConnect(drv, dbname = "./data/retail_sales_database.sqlite")
-
+retail_sales_db = dbConnect(drv, dbname = "./data/retail_sales_data.sqlite")
+dbExecute(retail_sales_db, "PRAGMA foreign_keys = ON")
 ```
 
 ```{r}
@@ -54,6 +54,7 @@ colnames(transactions) = c("invoice_id", "line", "customer_id", "product_id", "s
 ```
 
 
+**TABLE FOR CUSTOMERS**
 ```{r}
 
 dbExecute(retail_sales_db, "
@@ -67,20 +68,88 @@ dbExecute(retail_sales_db, "
           gender CHAR(1),
           date_of_birth TEXT,
           job_title TEXT
-          );")
+          )")
 
 dbWriteTable(retail_sales_db, 
              "CUSTOMERS", customers, append = TRUE)
 
 ```
 
+
+**TABLE FOR STORES**
 ```{r}
-dbListTables(retail_sales_db)
-dbListFields(retail_sales_db, "CUSTOMERS")
+dbExecute(retail_sales_db, "
+          CREATE TABLE STORES (
+          store_id INTEGER PRIMARY KEY,
+          country TEXT,
+          city TEXT,
+          store_name TEXT,
+          num_of_employees INTEGER,
+          zip_code CHAR(10),
+          latitude FLOAT,
+          longitude FLOAT
+          )")
+
+dbWriteTable(retail_sales_db, 
+             "STORES", stores, append = TRUE)
+
+```
+
+
+**TABLE FOR EMPLOYEES**
+```{r}
+dbExecute(retail_sales_db, "
+          CREATE TABLE EMPLOYEES (
+          employee_id INTEGER PRIMARY KEY,
+          store_id INTEGER,
+          name TEXT,
+          position TEXT,
+          FOREIGN KEY (store_id) REFERENCES STORES (store_id)
+          )")
+
+dbWriteTable(retail_sales_db, 
+             "EMPLOYEES", employees, append = TRUE)
+
+
+```
+
+**TABLE FOR PRODUCTS**
+```{r}
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
 dbGetQuery(retail_sales_db, "
-           SELECT *
+           SELECT * 
            FROM CUSTOMERS
            LIMIT 10")
+# dbListTables(retail_sales_db)
+# dbListFields(retail_sales_db, "EMPLOYEES")
+# dbExecute(retail_sales_db, "PRAGMA foreign_key_list(EMPLOYEES)")
+# 
+# 
+# dbGetQuery(retail_sales_db, "
+#            SELECT employee_id, name, position, STORES.store_name
+#            FROM EMPLOYEES INNER JOIN STORES
+#            ON EMPLOYEES.store_id = STORES.store_id
+#            LIMIT 10")
 ```
+
+
+
 
 
