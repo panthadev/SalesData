@@ -12,41 +12,75 @@ library(RSQLite)
 ```{r}
 drv = dbDriver("SQLite")
 
-retail_sales_db = dbConnect(drv, dbname = "./data/retail_sales.sqlite")
+retail_sales_db = dbConnect(drv, dbname = "./data/retail_sales_database.sqlite")
 
 ```
 
 ```{r}
 customers = read.csv("./data/customers.csv",
                      header = TRUE, stringsAsFactors = FALSE)
+colnames(customers) = c("customer_id", "name", "email", "phone_number", "city", "country", "gender", "date_of_birth", "job_title")
+```
 
+```{r}
+discounts = read.csv("./data/discounts.csv",
+                     header = TRUE, stringsAsFactors = FALSE)
+colnames(discounts) = c("start_date", "end_date", "discount", "description", "category", "sub_category")
+```
 
+```{r}
 
+employees = read.csv("./data/employees.csv",
+                     header = TRUE, stringsAsFactors = FALSE)
+colnames(employees) = c("employee_id", "store_id", "name", "position")
+```
+
+```{r}
+products = read.csv("./data/products.csv",
+                     header = TRUE, stringsAsFactors = FALSE)[,c(1,2,3,8,10,11,12)]
+colnames(products) = c("product_id", "category", "sub_category", "description", "color", "sizes", "production_cost")
+```
+
+```{r}
+stores = read.csv("./data/stores.csv",
+                     header = TRUE, stringsAsFactors = FALSE)
+colnames(stores) = c("store_id", "country", "city", "store_name", "num_of_employees", "zip_code", "latitude", "longitude")
+```
+
+```{r}
+transactions = read.csv("./data/transactions.csv",
+                     header = TRUE, stringsAsFactors = FALSE)
+colnames(transactions) = c("invoice_id", "line", "customer_id", "product_id", "size", "color", "unit_price", "quantity", "date", "discount", "line_total", "store_id", "employee_id", "currency", "currency_symbol", "sku", "transaction_type", "payement_method", "invoice_total")
 ```
 
 
 ```{r}
-dbWriteTable(retail_sales_db,
-             "CUSTOMERS", customers, overwrite = TRUE)
+
+dbExecute(retail_sales_db, "
+          CREATE TABLE CUSTOMERS (
+          customer_id INTEGER PRIMARY KEY,
+          name TEXT,
+          email TEXT,
+          phone_number TEXT,
+          city TEXT,
+          country TEXT,
+          gender CHAR(1),
+          date_of_birth TEXT,
+          job_title TEXT
+          );")
+
+dbWriteTable(retail_sales_db, 
+             "CUSTOMERS", customers, append = TRUE)
 
 ```
 
-
 ```{r}
-
 dbListTables(retail_sales_db)
 dbListFields(retail_sales_db, "CUSTOMERS")
-
-dbGetQuery(retail_sales_db, 
-           "SELECT *
+dbGetQuery(retail_sales_db, "
+           SELECT *
            FROM CUSTOMERS
            LIMIT 10")
-
 ```
-
-
-
-
-
 
 
