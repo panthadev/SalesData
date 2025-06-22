@@ -50,7 +50,7 @@ colnames(stores) = c("store_id", "country", "city", "store_name", "num_of_employ
 ```{r}
 transactions = read.csv("./data/transactions.csv",
                      header = TRUE, stringsAsFactors = FALSE)
-colnames(transactions) = c("invoice_id", "line", "customer_id", "product_id", "size", "color", "unit_price", "quantity", "date", "discount", "line_total", "store_id", "employee_id", "currency", "currency_symbol", "sku", "transaction_type", "payement_method", "invoice_total")
+colnames(transactions) = c("invoice_id", "line", "customer_id", "product_id", "size", "color", "unit_price", "quantity", "date", "discount", "line_total", "store_id", "employee_id", "currency", "currency_symbol", "sku", "transaction_type", "payment_method", "invoice_total")
 ```
 
 
@@ -113,12 +113,67 @@ dbWriteTable(retail_sales_db,
 
 ```
 
+
 **TABLE FOR PRODUCTS**
 ```{r}
+dbExecute(retail_sales_db, "
+          CREATE TABLE PRODUCTS (
+          product_id INTEGER PRIMARY KEY,
+          category TEXT,
+          sub_category TEXT,
+          description TEXT,
+          color TEXT,
+          sizes CHAR(20),
+          production_cost FLOAT
+          )")
 
 
+dbWriteTable(retail_sales_db, 
+             "PRODUCTS", products, append = TRUE)
 
 
+```
+
+```{r}
+transactions
+
+
+```
+
+**TABLE FOR TRANSACTIONS**
+```{r}
+dbExecute(retail_sales_db, "
+          CREATE TABLE TRANSACTIONS (
+          invoice_id CHAR(20),
+          line INTEGER,
+          customer_id INTEGER,
+          product_id INTEGER,
+          size CHAR(5),
+          color TEXT,
+          unit_price FLOAT,
+          quantity INTEGER,
+          date CHAR(20),
+          discount FLOAT,
+          line_total FLOAT,
+          store_id INTEGER,
+          employee_id INTEGER,
+          currency TEXT,
+          currency_symbol CHAR(5),
+          sku CHAR(20),
+          transaction_type TEXT,
+          payment_method TEXT,
+          invoice_total FLOAT,
+          FOREIGN KEY (customer_id) REFERENCES CUSTOMERS (customer_id),
+          FOREIGN KEY (product_id) REFERENCES PRODUCTS (product_id),
+          FOREIGN KEY (store_id) REFERENCES STORES (store_id),
+          FOREIGN KEY (employee_id) REFERENCES EMPLOYEES (employee_id)
+          )")
+
+```
+
+```{r}
+dbWriteTable(retail_sales_db, 
+             "TRANSACTIONS", transactions, append = TRUE)
 
 
 ```
@@ -131,11 +186,10 @@ dbWriteTable(retail_sales_db,
 
 
 
-
 ```{r}
 dbGetQuery(retail_sales_db, "
            SELECT * 
-           FROM CUSTOMERS
+           FROM PRODUCTS
            LIMIT 10")
 # dbListTables(retail_sales_db)
 # dbListFields(retail_sales_db, "EMPLOYEES")
