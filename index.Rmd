@@ -230,6 +230,9 @@ revenue_per_month_usa2023 = plot_ly(x =  months,
 
 revenue_per_month_usa2023 = revenue_per_month_usa2023 %>% config(displayModeBar = FALSE)
 
+revenue_per_month_usa2023 = revenue_per_month_usa2023 %>% layout(title = "REVENUE PER MONTH (USA, 2023)",
+         xaxis = list(title = "Months"),
+         yaxis = list(title = "Revenue(millions)"))
 
 revenue_per_month_usa2023
 
